@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}SecureAuth — Secure Authentication Platform{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div style="max-width:680px;">
+      <div class="hero-badge">
+        <i class="fa-solid fa-shield-halved"></i> Enterprise-grade security
+      </div>
+      <h1 class="hero-title">
+        Authentication<br>
+        <span class="gradient-text">Reimagined.</span>
+      </h1>
+      <p class="hero-desc">
+        A modern, secure authentication system with Two-Factor Authentication,
+        password hashing, and session management — built with Flask and best-in-class security practices.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+          <i class="fa-solid fa-rocket"></i> Get Started Free
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </a>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(99,102,241,0.15);">
+          <i class="fa-solid fa-lock" style="color:#6366f1;"></i>
+        </div>
+        <h4>Password Hashing</h4>
+        <p>Passwords are hashed with Werkzeug's PBKDF2 — never stored in plain text.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(16,185,129,0.15);">
+          <i class="fa-solid fa-mobile-screen" style="color:#10b981;"></i>
+        </div>
+        <h4>2FA / TOTP</h4>
+        <p>Time-based OTP via Google Authenticator or Authy for every login.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,0.15);">
+          <i class="fa-solid fa-shield-check" style="color:#f59e0b;"></i>
+        </div>
+        <h4>Session Security</h4>
+        <p>Secure session handling with clean logout and session invalidation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(59,130,246,0.15);">
+          <i class="fa-solid fa-qrcode" style="color:#3b82f6;"></i>
+        </div>
+        <h4>QR Code Setup</h4>
+        <p>Scan a QR code to link your authenticator app in seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

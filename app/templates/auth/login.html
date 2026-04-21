@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Sign In — SecureAuth{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="glass-card auth-card">
+
+    <div class="auth-logo">
+      <i class="fa-solid fa-right-to-bracket" style="color:#fff;"></i>
+    </div>
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-subtitle">Sign in to your SecureAuth account</p>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:0.5rem;margin-bottom:1.75rem;
+                background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;">
+      <button onclick="showTab('password')" id="tab-password" class="tab-btn tab-active">
+        <i class="fa-solid fa-lock"></i> Password
+      </button>
+      <button onclick="showTab('credential')" id="tab-credential" class="tab-btn">
+        <i class="fa-solid fa-key"></i> Device Credential
+      </button>
+    </div>
+
+    <!-- ── Tab 1: Password login ──────────────────────────── -->
+    <div id="panel-password">
+      <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+        <input type="hidden" name="login_type" value="password">
+
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" name="email" class="form-control"
+                   placeholder="you@example.com" required autofocus>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" name="password" id="password" class="form-control"
+                   placeholder="••••••••" required>
+            <button type="button" class="toggle-password" onclick="togglePwd()">
+              <i class="fa-solid fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-w" style="margin-top:0.5rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+    </div>
+
+    <!-- ── Tab 2: Device credential login ────────────────── -->
+    <div id="panel-credential" style="display:none;">
+
+      <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);
+                  border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🔑</div>
+        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;margin:0;">
+          Upload the <strong style="color:var(--text-primary);">.secureauth</strong> file
+          saved on your device during registration. No password needed.
+        </p>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.login') }}"
+            enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="login_type" value="credential">
+
+        <div class="form-group">
+          <label class="form-label">Credential File</label>
+          <div id="dropZone" onclick="document.getElementById('credFile').click()"
+            style="border:2px dashed var(--border);border-radius:10px;
+                   padding:2rem 1rem;text-align:center;cursor:pointer;
+                   transition:all 0.2s;background:rgba(255,255,255,0.02);">
+            <i class="fa-solid fa-cloud-arrow-up"
+               style="font-size:1.8rem;color:var(--text-muted);margin-bottom:0.5rem;display:block;"></i>
+            <p id="dropLabel" style="color:var(--text-muted);font-size:0.85rem;margin:0;">
+              Click to select your <strong>.secureauth</strong> file
+            </p>
+          </div>
+          <input type="file" id="credFile" name="credential_file"
+                 accept=".secureauth" style="display:none;"
+                 onchange="fileSelected(this)">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-w" id="credSubmitBtn" disabled>
+          <i class="fa-solid fa-unlock"></i> Sign In with Credential
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="{{ url_for('auth.register') }}">Create one</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(name) {
+  document.getElementById('panel-password').style.display   = name === 'password'   ? '' : 'none';
+  document.getElementById('panel-credential').style.display = name === 'credential' ? '' : 'none';
+  document.getElementById('tab-password').className   = 'tab-btn' + (name === 'password'   ? ' tab-active' : '');
+  document.getElementById('tab-credential').className = 'tab-btn' + (name === 'credential' ? ' tab-active' : '');
+}
+
+function togglePwd() {
+  const input = document.getElementById('password');
+  const icon  = document.getElementById('eyeIcon');
+  input.type  = input.type === 'password' ? 'text' : 'password';
+  icon.className = input.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+}
+
+function fileSelected(input) {
+  const file = input.files[0];
+  const btn  = document.getElementById('credSubmitBtn');
+  const lbl  = document.getElementById('dropLabel');
+  const zone = document.getElementById('dropZone');
+  if (file) {
+    lbl.innerHTML = '<i class="fa-solid fa-file-shield" style="color:var(--success);"></i> &nbsp;' + file.name;
+    zone.style.borderColor = 'var(--success)';
+    zone.style.background  = 'rgba(16,185,129,0.05)';
+    btn.disabled = false;
+  }
+}
+
+// Drag-and-drop support
+const zone = document.getElementById('dropZone');
+zone.addEventListener('dragover',  e => { e.preventDefault(); zone.style.borderColor = 'var(--accent)'; });
+zone.addEventListener('dragleave', () => { zone.style.borderColor = 'var(--border)'; });
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const input = document.getElementById('credFile');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    fileSelected(input);
+  }
+});
+</script>
+
+<style>
+.tab-btn {
+  flex: 1; padding: 0.55rem 0.5rem;
+  background: none; border: none;
+  border-radius: 8px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-active {
+  background: rgba(99,102,241,0.2);
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SecureAuth{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="bg-animated"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container d-flex align-center justify-between">
+      <a href="{{ url_for('main.index') }}" class="navbar-brand">
+        <i class="fa-solid fa-shield-halved"></i> Secure<span>Auth</span>
+      </a>
+      <div class="d-flex align-center gap-2">
+        {% if current_user.is_authenticated %}
+          <div class="nav-user">
+            <div class="nav-avatar">{{ current_user.username[0].upper() }}</div>
+            <span style="color:var(--text-secondary);font-size:0.85rem;">{{ current_user.username }}</span>
+          </div>
+          <a href="{{ url_for('main.home') }}" class="nav-pill">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+          <a href="{{ url_for('main.dashboard') }}" class="nav-pill">
+            <i class="fa-solid fa-gauge"></i> Dashboard
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="nav-pill danger">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="nav-pill">
+            <i class="fa-solid fa-right-to-bracket"></i> Login
+          </a>
+          <a href="{{ url_for('auth.register') }}" class="nav-pill active">
+            <i class="fa-solid fa-user-plus"></i> Register
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        <div class="container">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              {% if category == 'success' %}<i class="fa-solid fa-circle-check"></i>
+              {% elif category == 'danger'  %}<i class="fa-solid fa-circle-xmark"></i>
+              {% elif category == 'warning' %}<i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}<i class="fa-solid fa-circle-info"></i>{% endif %}
+              {{ message }}
+              <button class="alert-close" onclick="this.parentElement.remove()">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Page Content -->
+  {% block content %}{% endblock %}
+
+  <script>
+    // Auto-dismiss alerts after 5s
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(a => {
+        a.style.transition = 'opacity 0.4s';
+        a.style.opacity = '0';
+        setTimeout(() => a.remove(), 400);
+      });
+    }, 5000);
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Home — SecureAuth{% endblock %}
+{% block content %}
+<div class="home-header">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-avatar">{{ user.username[0].upper() }}</div>
+    <div class="welcome-text">
+      <h2>Welcome back, {{ user.username }}! 👋</h2>
+      <p>{{ user.email }} &nbsp;·&nbsp; Member since {{ user.created_at.strftime('%B %Y') if user.created_at else 'N/A' }}</p>
+    </div>
+    <div style="margin-left:auto;">
+      {% if user.twofa_enabled %}
+        <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> 2FA Active</span>
+      {% else %}
+        <span class="badge badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> 2FA Off</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label"><i class="fa-solid fa-circle-check"></i> &nbsp;Account Status</div>
+      <div class="stat-value text-success">Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="fa-solid fa-mobile-screen"></i> &nbsp;Two-Factor Auth</div>
+      <div class="stat-value" style="color:{% if user.twofa_enabled %}var(--success){% else %}var(--warning){% endif %};">
+        {% if user.twofa_enabled %}Enabled{% else %}Disabled{% endif %}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="fa-solid fa-key"></i> &nbsp;Auth Method</div>
+      <div class="stat-value text-accent">TOTP / 2FA</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="fa-solid fa-database"></i> &nbsp;Session</div>
+      <div class="stat-value text-success">Secure</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <h3 style="font-size:1rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1rem;">
+    Quick Actions
+  </h3>
+  <div class="quick-actions">
+    <a href="{{ url_for('main.dashboard') }}" class="action-card">
+      <div class="action-icon" style="background:rgba(99,102,241,0.15);">
+        <i class="fa-solid fa-gauge" style="color:#6366f1;"></i>
+      </div>
+      <h4>Dashboard</h4>
+      <p>View your account details and security settings</p>
+    </a>
+    <a href="{{ url_for('auth.logout') }}" class="action-card">
+      <div class="action-icon" style="background:rgba(239,68,68,0.15);">
+        <i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i>
+      </div>
+      <h4>Sign Out</h4>
+      <p>End your session securely</p>
+    </a>
+    <div class="action-card" style="cursor:default;">
+      <div class="action-icon" style="background:rgba(16,185,129,0.15);">
+        <i class="fa-solid fa-shield-halved" style="color:#10b981;"></i>
+      </div>
+      <h4>Security</h4>
+      <p>2FA is {% if user.twofa_enabled %}protecting{% else %}not protecting{% endif %} your account</p>
+    </div>
+    <div class="action-card" style="cursor:default;">
+      <div class="action-icon" style="background:rgba(245,158,11,0.15);">
+        <i class="fa-solid fa-clock" style="color:#f59e0b;"></i>
+      </div>
+      <h4>Session Info</h4>
+      <p>Your session is active and encrypted</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
