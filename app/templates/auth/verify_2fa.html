@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Verify 2FA — SecureAuth{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="glass-card auth-card">
+
+    <div class="auth-logo">
+      <i class="fa-solid fa-mobile-screen" style="color:#fff;"></i>
+    </div>
+    <h1 class="auth-title">Two-Factor Auth</h1>
+    <p class="auth-subtitle">
+      Open your authenticator app and enter the 6-digit code
+    </p>
+
+    <form method="POST" action="{{ url_for('auth.verify_2fa') }}" id="otpForm">
+      <div class="otp-group">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autofocus>
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      </div>
+      <input type="hidden" name="token" id="tokenInput">
+
+      <button type="submit" class="btn btn-primary btn-w" id="verifyBtn" disabled>
+        <i class="fa-solid fa-unlock"></i> Verify &amp; Sign In
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <a href="{{ url_for('auth.login') }}">
+        <i class="fa-solid fa-arrow-left"></i> Back to login
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const boxes    = document.querySelectorAll('.otp-box');
+const tokenIn  = document.getElementById('tokenInput');
+const verifyBtn= document.getElementById('verifyBtn');
+
+boxes.forEach((box, i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g,'');
+    if (box.value && i < boxes.length - 1) boxes[i+1].focus();
+    syncToken();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) boxes[i-1].focus();
+  });
+  box.addEventListener('paste', e => {
+    e.preventDefault();
+    const digits = (e.clipboardData.getData('text')).replace(/\D/g,'').slice(0,6);
+    digits.split('').forEach((d,j) => { if(boxes[j]) boxes[j].value = d; });
+    syncToken();
+    if (digits.length === 6) boxes[5].focus();
+  });
+});
+
+function syncToken() {
+  const val = Array.from(boxes).map(b => b.value).join('');
+  tokenIn.value = val;
+  verifyBtn.disabled = val.length !== 6;
+}
+</script>
+{% endblock %}

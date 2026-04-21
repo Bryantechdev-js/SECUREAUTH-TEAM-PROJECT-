@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SecureAuth{% endblock %}
+{% block content %}
+<div class="dashboard-wrapper">
+
+  <div class="d-flex align-center justify-between mb-3">
+    <div>
+      <h2 style="font-size:1.5rem;font-weight:700;">Account Dashboard</h2>
+      <p style="color:var(--text-muted);font-size:0.9rem;">Your security overview</p>
+    </div>
+    <a href="{{ url_for('main.home') }}" class="btn btn-ghost btn-sm">
+      <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="glass-card" style="padding:2rem;margin-bottom:1.5rem;">
+    <div class="d-flex align-center gap-2" style="margin-bottom:1.5rem;">
+      <div class="welcome-avatar" style="width:56px;height:56px;font-size:1.4rem;">
+        {{ user.username[0].upper() }}
+      </div>
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:700;margin:0;">{{ user.username }}</h3>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin:0;">{{ user.email }}</p>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label"><i class="fa-solid fa-user"></i> &nbsp;Username</span>
+      <span class="info-value">{{ user.username }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label"><i class="fa-solid fa-envelope"></i> &nbsp;Email</span>
+      <span class="info-value">{{ user.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label"><i class="fa-solid fa-circle-check"></i> &nbsp;Account Status</span>
+      <span class="badge badge-success"><i class="fa-solid fa-circle"></i> Active</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label"><i class="fa-solid fa-mobile-screen"></i> &nbsp;Two-Factor Auth</span>
+      {% if user.twofa_enabled %}
+        <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> Enabled</span>
+      {% else %}
+        <span class="badge badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Disabled</span>
+      {% endif %}
+    </div>
+    <div class="info-row">
+      <span class="info-label"><i class="fa-solid fa-calendar"></i> &nbsp;Member Since</span>
+      <span class="info-value">{{ user.created_at.strftime('%d %B %Y') if user.created_at else 'N/A' }}</span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex gap-2" style="flex-wrap:wrap;">
+    <a href="{{ url_for('main.home') }}" class="btn btn-ghost">
+      <i class="fa-solid fa-house"></i> Home
+    </a>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger-soft">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+    </a>
+  </div>
+
+</div>
+{% endblock %}
